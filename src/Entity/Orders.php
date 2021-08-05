@@ -64,14 +64,15 @@ class Orders
      */
     private $user;
 
+
     /**
-     * @ORM\OneToMany(targetEntity=OrderDetails::class, mappedBy="orders")
+     * @ORM\ManyToMany(targetEntity=Product::class, mappedBy="orders")
      */
-    private $orderDetails;
+    private $products;
 
     public function __construct()
     {
-        $this->orderDetails = new ArrayCollection();
+        $this->products = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -188,30 +189,27 @@ class Orders
     }
 
     /**
-     * @return Collection|OrderDetails[]
+     * @return Collection|Product[]
      */
-    public function getOrderDetails(): Collection
+    public function getProducts(): Collection
     {
-        return $this->orderDetails;
+        return $this->products;
     }
 
-    public function addOrderDetail(OrderDetails $orderDetail): self
+    public function addProduct(Product $product): self
     {
-        if (!$this->orderDetails->contains($orderDetail)) {
-            $this->orderDetails[] = $orderDetail;
-            $orderDetail->setOrders($this);
+        if (!$this->products->contains($product)) {
+            $this->products[] = $product;
+            $product->addOrder($this);
         }
 
         return $this;
     }
 
-    public function removeOrderDetail(OrderDetails $orderDetail): self
+    public function removeProduct(Product $product): self
     {
-        if ($this->orderDetails->removeElement($orderDetail)) {
-            // set the owning side to null (unless already changed)
-            if ($orderDetail->getOrders() === $this) {
-                $orderDetail->setOrders(null);
-            }
+        if ($this->products->removeElement($product)) {
+            $product->removeOrder($this);
         }
 
         return $this;
