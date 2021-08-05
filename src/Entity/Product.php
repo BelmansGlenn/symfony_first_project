@@ -60,11 +60,6 @@ class Product
     private $isSpecialOffer;
 
     /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $image;
-
-    /**
      * @ORM\OneToMany(targetEntity=Reviews::class, mappedBy="product")
      */
     private $reviews;
@@ -84,12 +79,28 @@ class Product
      */
     private $relatedProducts;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $stock;
+
+    /**
+     * @ORM\Column(type="float")
+     */
+    private $priceHorsTVA;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Orders::class, inversedBy="products")
+     */
+    private $orders;
+
     public function __construct()
     {
         $this->reviews = new ArrayCollection();
         $this->categories = new ArrayCollection();
         $this->tags = new ArrayCollection();
         $this->relatedProducts = new ArrayCollection();
+        $this->orders = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -189,18 +200,6 @@ class Product
     public function setIsSpecialOffer(?string $isSpecialOffer): self
     {
         $this->isSpecialOffer = $isSpecialOffer;
-
-        return $this;
-    }
-
-    public function getImage(): ?string
-    {
-        return $this->image;
-    }
-
-    public function setImage(string $image): self
-    {
-        $this->image = $image;
 
         return $this;
     }
@@ -315,6 +314,54 @@ class Product
                 $relatedProduct->setProduct(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getStock(): ?int
+    {
+        return $this->stock;
+    }
+
+    public function setStock(int $stock): self
+    {
+        $this->stock = $stock;
+
+        return $this;
+    }
+
+    public function getPriceHorsTVA(): ?float
+    {
+        return $this->priceHorsTVA;
+    }
+
+    public function setPriceHorsTVA(float $priceHorsTVA): self
+    {
+        $this->priceHorsTVA = $priceHorsTVA;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Orders[]
+     */
+    public function getOrders(): Collection
+    {
+        return $this->orders;
+    }
+
+    public function addOrder(Orders $order): self
+    {
+        if (!$this->orders->contains($order)) {
+            $this->orders[] = $order;
+        }
+
+        return $this;
+    }
+
+    public function removeOrder(Orders $order): self
+    {
+        $this->orders->removeElement($order);
 
         return $this;
     }
